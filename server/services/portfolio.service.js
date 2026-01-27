@@ -21,12 +21,23 @@ class PortfolioService {
       colorScheme = 'light'
     } = data;
 
-    // Validate required fields
-    if (!personalInfo || !personalInfo.name || !personalInfo.title) {
-      throw new Error('Personal information (name and title) is required');
+    // Validate required fields - be lenient with empty values
+    if (!personalInfo || !personalInfo.name || personalInfo.name.trim().length === 0) {
+      throw new Error('Name is required in Personal Information');
     }
 
-    if (!about || about.trim().length < 10) {
+    if (!personalInfo.title || personalInfo.title.trim().length === 0) {
+      throw new Error('Title/Job Position is required in Personal Information');
+    }
+
+    if (!personalInfo.email || personalInfo.email.trim().length === 0) {
+      throw new Error('Email is required in Personal Information');
+    }
+
+    // Clean about text (remove extra quotes if present)
+    const cleanAbout = about ? about.trim().replace(/^["']+|["']+$/g, '') : '';
+    
+    if (!cleanAbout || cleanAbout.length < 10) {
       throw new Error('About section is required and must be at least 10 characters');
     }
 
@@ -40,7 +51,7 @@ class PortfolioService {
       },
       personalInfo: this.formatPersonalInfo(personalInfo),
       hero: this.generateHeroSection(personalInfo),
-      about: this.formatAbout(about),
+      about: this.formatAbout(cleanAbout),
       skills: this.formatSkills(skills),
       projects: this.formatProjects(projects),
       experience: this.formatExperience(experience),

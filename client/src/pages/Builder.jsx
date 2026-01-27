@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Save, Eye } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, Eye, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import usePortfolioStore from '../store/portfolioStore';
 import { portfolioApi } from '../services/api';
@@ -37,6 +37,7 @@ const Builder = () => {
     portfolioData,
     setGeneratedPortfolio,
     setCompleteness,
+    resetPortfolio,
   } = usePortfolioStore();
 
   const CurrentStepComponent = steps[currentStep].component;
@@ -90,13 +91,27 @@ const Builder = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-2 text-primary hover:underline mb-4"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Home
-          </button>
+          <div className="flex items-center justify-between mb-4">
+            <button
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 text-primary hover:underline"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back to Home
+            </button>
+            <button
+              onClick={() => {
+                if (window.confirm('Are you sure you want to clear all data? This cannot be undone.')) {
+                  resetPortfolio();
+                  toast.success('All data cleared successfully!');
+                }
+              }}
+              className="flex items-center gap-2 px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+              Clear All Data
+            </button>
+          </div>
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
             Build Your Portfolio
           </h1>

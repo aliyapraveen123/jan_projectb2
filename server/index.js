@@ -18,8 +18,22 @@ const PORT = process.env.PORT || 5000;
 app.use(helmet());
 
 // CORS configuration
+// Allow the configured CLIENT_URL or any localhost dev port (5173/5174)
+const allowedOrigins = [process.env.CLIENT_URL].filter(Boolean);
 const corsOptions = {
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like curl/postman)
+    if (!origin) return callback(null, true);
+
+    // Allow configured origin
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+
+    // Allow localhost dev ports (5173, 5174)
+    if (/^https?:\/\/localhost:(5173|5174)$/.test(origin)) return callback(null, true);
+
+    // Reject others in production
+    return callback(new Error('Not allowed by CORS')); 
+  },
   credentials: true,
   optionsSuccessStatus: 200
 };

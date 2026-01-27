@@ -15,8 +15,12 @@ import usePortfolioStore from '../store/portfolioStore';
 const Home = () => {
   const navigate = useNavigate();
   const loadSampleData = usePortfolioStore((state) => state.loadSampleData);
+  const resetPortfolio = usePortfolioStore((state) => state.resetPortfolio);
 
   const handleGetStarted = () => {
+    // Force clear everything before starting
+    resetPortfolio();
+    localStorage.removeItem('portfolio-storage');
     navigate('/builder');
   };
 
